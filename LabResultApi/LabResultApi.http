@@ -1,0 +1,6 @@
+@LabResultApi_HostAddress = http://localhost:5108
+
+GET {{LabResultApi_HostAddress}}/testentities/
+Accept: application/json
+
+###
