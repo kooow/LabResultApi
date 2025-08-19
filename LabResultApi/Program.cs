@@ -17,6 +17,7 @@ builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<ILabResultRepository, LabResultRepository>();
 
 builder.Services.AddSingleton<ILoaderService, FileLoaderService>();
+builder.Services.AddTransient<TestDataSeeder>();
 
 var app = builder.Build();
 
@@ -32,5 +33,11 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    var seeder = scope.ServiceProvider.GetRequiredService<TestDataSeeder>();
+    seeder.Seed();
+}
 
 app.Run();

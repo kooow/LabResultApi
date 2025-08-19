@@ -1,4 +1,4 @@
-﻿using LabResultApi.Services.Database;
+﻿using LabResultApi.Services.DbContext;
 
 namespace LabResultApi.Services.Repository;
 
