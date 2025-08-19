@@ -1,4 +1,6 @@
 ﻿using LabResultApi.Entities;
+using System;
+using System.Collections;
 
 namespace LabResultApi.Services;
 
@@ -33,7 +35,7 @@ public class FileLoaderService : ILoaderService
         var dataFieldsHeader = stringReader.ReadLine();
         if (string.IsNullOrEmpty(dataFieldsHeader))
         {
-            throw new FormatException("Data fields header format missing!");
+            throw new FormatException("Data fields header missing!");
         }
 
         var dataFields = dataFieldsHeader.Split(DelimiterChar);
@@ -64,8 +66,12 @@ public class FileLoaderService : ILoaderService
 
             if (dataFields.Length != values.Length)
             {
-                throw new FormatException($"Header fields and values are different: {dataFields.Length} != {values.Length}!");
+                throw new FormatException($"Header fields and values lengths are different: {dataFields.Length} != {values.Length}!");
             }
+
+            DateOnly.TryParseExact(values[4], "yyyy-MM-dd", out var dateOfBirthDate);
+            DateOnly.TryParseExact(values[6], "yyyy-MM-dd", out var collectionDate);
+            TimeOnly.TryParseExact(values[7], "hh:mm", out var collectionTime);
 
             var result = new LabResult
             {
@@ -73,10 +79,9 @@ public class FileLoaderService : ILoaderService
                 BARCODE = values[1],
                 PATIENT_ID = int.Parse(values[2]),
                 PATIENT_NAME = values[3],
-                DOB = DateOnly.TryParseExact(values[4], "yyyy-MM-dd", out var dobDate) ? dobDate : null,
+                DOB = dateOfBirthDate,
                 GENDER = char.Parse(values[5]),
-                COLLECTIONDATE = DateOnly.TryParseExact(values[6], "yyyy-MM-dd", out var collectionDate) ? collectionDate : null,
-                COLLECTIONTIME = TimeOnly.TryParseExact(values[7], "hh:mm", out var collectionTime) ? collectionTime : null,
+                COLLECTION = collectionDate.ToDateTime(collectionTime),
                 TESTCODE = values[8],
                 TESTNAME = values[9],
                 RESULT = values[10],
