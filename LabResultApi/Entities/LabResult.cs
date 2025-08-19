@@ -1,8 +1,12 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace LabResultApi.Entities;
 
 public class LabResult
 {
     public int? CLINIC_NO { get; set; }
+
+    [Key]
     public string? BARCODE { get; set; }
     public int? PATIENT_ID { get; set; }
     public string? PATIENT_NAME { get; set; }
