@@ -1,27 +1,35 @@
+using LabResultApi.Entities;
+using LabResultApi.Services.Repository;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LabResultApi.Controllers;
 
 [ApiController]
 [Route("[controller]")]
+[Produces("application/json")]
 public class LabResultController : ControllerBase
 {
     private readonly ILogger<LabResultController> _logger;
-
-    public LabResultController(ILogger<LabResultController> logger)
+    private readonly ILabResultRepository _labResultRepository;
+    public LabResultController(ILogger<LabResultController> logger,
+        ILabResultRepository labResultRepository)
     {
         _logger = logger;
+        _labResultRepository = labResultRepository;
     }
 
-    [HttpGet(Name = "GetEntities")]
-    public IEnumerable<TestEntity> Get()
+    [HttpGet(Name = "GetLabResults")]
+    public IEnumerable<LabResult> GetLabResults()
     {
-        return Enumerable.Range(1, 5).Select(index => new TestEntity
+        IEnumerable<LabResult> results = [];
+        try
         {
-            Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Data = Random.Shared.Next(-20, 55),
-            Summary = string.Empty,
-        })
-        .ToArray();
+            results = _labResultRepository.GetAll();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected error!");
+        }
+        return results;
     }
 }
